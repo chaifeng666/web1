@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>人工智慧應用實務研習班第1期｜報告順序歡樂抽籤</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
   --bg:#fff7ec; --bg2:#ffe9d2; --card:#ffffff; --ink:#2b2340; --muted:#6f6680;
@@ -79,7 +80,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
   <header>
     <span class="badge">人工智慧應用實務研習班第1期</span>
     <h1>🎲 報告順序歡樂抽籤</h1>
-    <p class="sub">共 20 位學員・分兩批抽籤・長官確認後定案</p>
+    <p class="sub">共 20 位學員（座號 1～20）・分兩批抽籤・長官確認後定案</p>
     <div class="toolbar">
       <button class="btn-ghost" id="musicBtn">🎵 背景音樂：關</button>
       <button class="btn-ghost" id="sfxBtn">🔔 音效：開</button>
@@ -88,7 +89,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
 
   <div class="batches">
     <section class="card b1 active" id="card0">
-      <h2>第1批 <span class="tag" style="background:var(--b1)">座號 1～10</span></h2>
+      <h2>第1批 <span class="tag" style="background:var(--b1)">從 1～20 號抽 10 位</span></h2>
       <p class="status" id="status0">等待抽籤</p>
       <div class="roller idle" id="roller0">按下「開始抽籤」</div>
       <div class="grid" id="grid0"></div>
@@ -101,7 +102,7 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
     </section>
 
     <section class="card b2 locked" id="card1">
-      <h2>第2批 <span class="tag" style="background:var(--b2)">座號 11～20</span></h2>
+      <h2>第2批 <span class="tag" style="background:var(--b2)">剩餘 10 位</span></h2>
       <p class="status" id="status1">第1批確認後開放</p>
       <div class="roller idle" id="roller1">🔒 尚未開放</div>
       <div class="grid" id="grid1"></div>
@@ -131,11 +132,12 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
   <section class="rules">
     <h3>📌 抽籤規則</h3>
     <ol>
-      <li>全班 20 位學員依座號分為兩批：第1批座號 1～10，第2批座號 11～20。</li>
-      <li>每批由系統以亂數產生 10 位報告順序，抽完先顯示結果。</li>
-      <li>結果由長官確認；如需調整可按「重抽」，該批重新亂數產生。</li>
+      <li>全班 20 位學員（座號 1～20）分兩批抽籤。</li>
+      <li>第1批：由 20 個座號中亂數抽出 10 位，並依抽出先後排定第 1～10 順位。</li>
+      <li>第2批：扣除第1批已抽中的 10 位，將剩下的 10 位亂數排定第 11～20 順位。</li>
+      <li>每批抽完先顯示結果，不會自動定案。</li>
+      <li>結果由長官確認；如需調整可按「重抽」，該批重新亂數產生（第2批重抽時，名單仍為第1批以外的 10 位）。</li>
       <li>第1批確認後才開放第2批抽籤；第2批確認後產生「最終報告順序」。</li>
-      <li>最終順序：第1批 10 位為第 1～10 順位，第2批 10 位為第 11～20 順位。</li>
       <li>兩批皆確認後，可按「匯出結果 PDF」留存；「重新開始」將清除全部結果。</li>
     </ol>
   </section>
@@ -155,10 +157,13 @@ footer{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
 
 <script>
 const TITLE = "人工智慧應用實務研習班第1期";
+const ALL = Array.from({length:20},(_,i)=>i+1);
 const batches = [
-  {seats:[1,2,3,4,5,6,7,8,9,10], result:null, confirmed:false, color:"#ff6b4a"},
-  {seats:[11,12,13,14,15,16,17,18,19,20], result:null, confirmed:false, color:"#6c5ce7"}
+  {result:null, confirmed:false, color:"#ff6b4a"},
+  {result:null, confirmed:false, color:"#6c5ce7"}
 ];
+/* 第1批：1～20 全部；第2批：扣除第1批已抽中者 */
+function pool(b){ return b===0 ? ALL.slice() : ALL.filter(s=>!batches[0].result.includes(s)); }
 let busy = false;
 const $ = id => document.getElementById(id);
 
@@ -244,9 +249,10 @@ async function draw(b){
   const bt=batches[b]; bt.result=null; emptyGrid(b); render();
   const roller=$("roller"+b); roller.className="roller";
   $("status"+b).textContent="🎰 抽籤中…";
+  const seats=pool(b);
   const t0=Date.now();
-  while(Date.now()-t0<1600){ roller.textContent = bt.seats[rand(10)] + " 號"; sfxTick(); await wait(70); }
-  const res = shuffle(bt.seats);
+  while(Date.now()-t0<1600){ roller.textContent = seats[rand(seats.length)] + " 號"; sfxTick(); await wait(70); }
+  const res = shuffle(seats).slice(0,10);
   const chips=$("grid"+b).children;
   for(let i=0;i<10;i++){
     roller.textContent = `第 ${b*10+i+1} 位 → ${res[i]} 號`;
@@ -289,34 +295,54 @@ $("mOk").onclick=()=>{
 };
 
 /* ---------- 匯出 PDF ---------- */
+const td="border:1px solid #999;padding:6px;text-align:center;background:#fff";
+const th="border:1px solid #999;padding:7px;text-align:center;background:#f2f2f2;font-weight:700";
 function buildSheet(){
   const el=document.createElement("div");
-  el.style.cssText="width:720px;padding:36px 40px;font-family:'Noto Sans TC',sans-serif;color:#222;background:#fff";
+  // 放在畫面左上角（被遮罩蓋住），確保 html2canvas 能正確擷取，不會產生空白檔
+  el.style.cssText="position:absolute;left:0;top:0;z-index:-1;width:760px;padding:36px 44px;font-family:'Noto Sans TC',sans-serif;color:#222;background:#fff";
   const rows=finalRows().map(r=>`<tr><td style="${td}">${r.order}</td><td style="${td}">${r.seat}</td><td style="${td}">第${r.batch}批</td></tr>`).join("");
   el.innerHTML=`<div style="text-align:center">
-    <div style="font-size:24px;font-weight:900">${TITLE}</div>
-    <div style="font-size:19px;font-weight:700;margin-top:6px">報告順序抽籤結果</div>
-    <div style="font-size:13px;color:#555;margin:8px 0 16px">確認時間：${finalTime}　｜　共 20 位（第1批座號1～10、第2批座號11～20）</div></div>
-    <table style="width:100%;border-collapse:collapse;font-size:15px">
+    <div style="font-size:26px;font-weight:900">${TITLE}</div>
+    <div style="font-size:20px;font-weight:700;margin-top:6px">報告順序抽籤結果</div>
+    <div style="font-size:13px;color:#555;margin:8px 0 16px">確認時間：${finalTime}　｜　共 20 位（第1批由 20 位中抽 10 位，第2批為其餘 10 位）</div></div>
+    <table style="width:100%;border-collapse:collapse;font-size:16px">
     <thead><tr><th style="${th}">報告順序</th><th style="${th}">座號</th><th style="${th}">批次</th></tr></thead>
     <tbody>${rows}</tbody></table>
-    <div style="margin-top:36px;display:flex;justify-content:space-between;font-size:14px">
-      <span>承辦人：＿＿＿＿＿＿</span><span>長官確認：＿＿＿＿＿＿</span></div>`;
+    <div style="margin-top:40px;display:flex;justify-content:space-between;font-size:15px">
+      <span>承辦人：＿＿＿＿＿＿＿＿</span><span>長官確認：＿＿＿＿＿＿＿＿</span></div>`;
   return el;
 }
-const td="border:1px solid #999;padding:5px;text-align:center";
-const th="border:1px solid #999;padding:6px;text-align:center;background:#f2f2f2;font-weight:700";
+function printFallback(el){
+  const w=window.open("","_blank");
+  if(!w){ alert("請允許彈出視窗後再試一次"); return; }
+  el.style.position="static"; el.style.zIndex="auto";
+  w.document.write(`<html><head><meta charset="utf-8"><title>${TITLE}_報告順序抽籤結果</title></head><body style="margin:0">${el.outerHTML}</body></html>`);
+  w.document.close(); w.focus(); setTimeout(()=>w.print(),300);
+}
 $("pdfBtn").onclick=async()=>{
   if($("pdfBtn").disabled) return;
-  const el=buildSheet();
+  const btn=$("pdfBtn"), label=btn.textContent;
+  btn.disabled=true; btn.textContent="⏳ 產生 PDF 中…";
+  const el=buildSheet(); document.body.appendChild(el);
+  const y=window.scrollY;
   try{
-    if(typeof html2pdf==="undefined") throw new Error("no lib");
-    await html2pdf().set({margin:8,filename:`${TITLE}_報告順序抽籤結果.pdf`,
-      image:{type:"jpeg",quality:.98},html2canvas:{scale:2},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(el).save();
+    if(!window.html2canvas || !window.jspdf) throw new Error("PDF 函式庫未載入");
+    if(document.fonts && document.fonts.ready) await document.fonts.ready;
+    window.scrollTo(0,0);
+    const canvas=await html2canvas(el,{scale:2,backgroundColor:"#ffffff",useCORS:true,scrollX:0,scrollY:0,windowWidth:el.scrollWidth});
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({unit:"mm",format:"a4",orientation:"portrait"});
+    const pw=pdf.internal.pageSize.getWidth(), ph=pdf.internal.pageSize.getHeight(), m=10;
+    let w=pw-2*m, h=canvas.height*w/canvas.width;
+    if(h>ph-2*m){ h=ph-2*m; w=canvas.width*h/canvas.height; }
+    pdf.addImage(canvas.toDataURL("image/jpeg",0.95),"JPEG",(pw-w)/2,m,w,h);
+    pdf.save(`${TITLE}_報告順序抽籤結果.pdf`);
+    el.remove();
   }catch(e){
-    const w=window.open("","_blank");
-    w.document.write(`<html><head><title>${TITLE}_報告順序抽籤結果</title></head><body>${el.outerHTML}</body></html>`);
-    w.document.close(); w.focus(); w.print();
+    console.error(e); el.remove(); printFallback(buildSheet());
+  }finally{
+    window.scrollTo(0,y); btn.textContent=label; btn.disabled=false;
   }
 };
 

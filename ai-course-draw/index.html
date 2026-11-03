@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人工智慧應用實務研習班第1期｜報告順序歡樂抽籤</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{
+  --bg:#fff7ec; --bg2:#ffe9d2; --card:#ffffff; --ink:#2b2340; --muted:#6f6680;
+  --primary:#ff6b4a; --primary2:#ff9f43; --accent:#6c5ce7; --ok:#16a085; --line:#f1dcc6;
+  --b1:#ff6b4a; --b2:#6c5ce7; --shadow:0 8px 24px rgba(120,70,20,.12);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans TC",system-ui,sans-serif;color:var(--ink);
+  background:radial-gradient(circle at 10% 0%,#fff 0,var(--bg) 40%,var(--bg2) 100%) fixed;min-height:100vh}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+header{text-align:center;padding:18px 0 8px;position:relative}
+.badge{display:inline-block;background:var(--accent);color:#fff;border-radius:999px;padding:4px 14px;font-size:14px;font-weight:700;letter-spacing:1px}
+h1{margin:10px 0 4px;font-size:clamp(24px,5vw,38px);font-weight:900;
+  background:linear-gradient(90deg,var(--primary),var(--primary2),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);margin:0}
+.toolbar{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:16px 0 6px}
+button{font-family:inherit;font-size:16px;font-weight:700;border:0;border-radius:12px;padding:11px 18px;cursor:pointer;transition:transform .12s,box-shadow .12s,opacity .2s}
+button:hover:not(:disabled){transform:translateY(-2px);box-shadow:var(--shadow)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.btn-main{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff}
+.btn-ok{background:var(--ok);color:#fff}
+.btn-ghost{background:#fff;color:var(--ink);border:2px solid var(--line)}
+.btn-purple{background:var(--accent);color:#fff}
+.batches{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:16px}
+@media(max-width:760px){.batches{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:20px;padding:18px;box-shadow:var(--shadow);border:2px solid transparent;transition:border-color .3s,opacity .3s}
+.card.active{border-color:var(--primary2)}
+.card.locked{opacity:.55}
+.card.done{border-color:var(--ok)}
+.card h2{margin:0 0 4px;font-size:21px;display:flex;align-items:center;gap:8px}
+.tag{font-size:13px;padding:2px 10px;border-radius:999px;color:#fff;font-weight:700}
+.status{font-size:14px;color:var(--muted);margin:0 0 12px}
+.roller{height:92px;border-radius:16px;background:repeating-linear-gradient(45deg,#fff4e6,#fff4e6 10px,#ffeedd 10px,#ffeedd 20px);
+  display:flex;align-items:center;justify-content:center;font-size:54px;font-weight:900;color:var(--primary);margin-bottom:12px;letter-spacing:2px}
+.roller.idle{font-size:18px;color:var(--muted);font-weight:500;letter-spacing:0}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px}
+.chip{background:#faf6ff;border:2px dashed #e3dbf5;border-radius:12px;text-align:center;padding:8px 2px;min-height:64px}
+.chip .o{font-size:12px;color:var(--muted)}
+.chip .s{font-size:24px;font-weight:900}
+.chip.show{background:#fff;border-style:solid;animation:pop .4s ease}
+.b1 .chip.show{border-color:var(--b1)} .b1 .chip.show .s{color:var(--b1)}
+.b2 .chip.show{border-color:var(--b2)} .b2 .chip.show .s{color:var(--b2)}
+@keyframes pop{0%{transform:scale(.4) rotate(-10deg);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions button{flex:1;min-width:110px}
+.hint{font-size:14px;color:var(--ok);font-weight:700;margin:8px 0 0;min-height:20px}
+#final{display:none;margin-top:24px;background:var(--card);border-radius:20px;padding:22px;box-shadow:var(--shadow);border:3px solid var(--primary2)}
+#final h2{text-align:center;margin:0 0 4px;font-size:28px}
+#final .meta{text-align:center;color:var(--muted);margin:0 0 14px}
+table{width:100%;border-collapse:collapse;font-size:17px}
+th,td{border:1px solid #e8d9c7;padding:9px 6px;text-align:center}
+th{background:#fff1e0;font-weight:900}
+tbody tr:nth-child(even){background:#fffaf4}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;color:#fff;font-size:14px;font-weight:700}
+.bottom-bar{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:22px}
+.rules{margin-top:34px;background:#fff;border-radius:18px;padding:18px 22px;box-shadow:var(--shadow);font-size:15px;line-height:1.8}
+.rules h3{margin:0 0 6px}
+.rules ol{margin:0;padding-left:22px}
+.modal-bg{position:fixed;inset:0;background:rgba(30,20,50,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal{background:#fff;border-radius:18px;padding:24px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.modal h3{margin:0 0 8px;font-size:22px}
+.modal p{color:var(--muted);margin:0 0 18px}
+.modal .actions button{flex:1}
+.confetti{position:fixed;top:-20px;width:10px;height:14px;z-index:40;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+footer{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge">人工智慧應用實務研習班第1期</span>
+    <h1>🎲 報告順序歡樂抽籤</h1>
+    <p class="sub">共 20 位學員・分兩批抽籤・長官確認後定案</p>
+    <div class="toolbar">
+      <button class="btn-ghost" id="musicBtn">🎵 背景音樂：關</button>
+      <button class="btn-ghost" id="sfxBtn">🔔 音效：開</button>
+    </div>
+  </header>
+
+  <div class="batches">
+    <section class="card b1 active" id="card0">
+      <h2>第1批 <span class="tag" style="background:var(--b1)">座號 1～10</span></h2>
+      <p class="status" id="status0">等待抽籤</p>
+      <div class="roller idle" id="roller0">按下「開始抽籤」</div>
+      <div class="grid" id="grid0"></div>
+      <div class="actions">
+        <button class="btn-main" id="draw0">🎲 開始抽籤</button>
+        <button class="btn-ghost" id="redo0" style="display:none">🔄 重抽</button>
+        <button class="btn-ok" id="ok0" style="display:none">✅ 長官確認</button>
+      </div>
+      <p class="hint" id="hint0"></p>
+    </section>
+
+    <section class="card b2 locked" id="card1">
+      <h2>第2批 <span class="tag" style="background:var(--b2)">座號 11～20</span></h2>
+      <p class="status" id="status1">第1批確認後開放</p>
+      <div class="roller idle" id="roller1">🔒 尚未開放</div>
+      <div class="grid" id="grid1"></div>
+      <div class="actions">
+        <button class="btn-main" id="draw1" disabled>🎲 開始抽籤</button>
+        <button class="btn-ghost" id="redo1" style="display:none">🔄 重抽</button>
+        <button class="btn-ok" id="ok1" style="display:none">✅ 長官確認</button>
+      </div>
+      <p class="hint" id="hint1"></p>
+    </section>
+  </div>
+
+  <section id="final">
+    <h2>🎉 最終報告順序</h2>
+    <p class="meta" id="finalMeta"></p>
+    <table>
+      <thead><tr><th>報告順序</th><th>座號</th><th>批次</th></tr></thead>
+      <tbody id="finalBody"></tbody>
+    </table>
+  </section>
+
+  <div class="bottom-bar">
+    <button class="btn-purple" id="pdfBtn" disabled title="兩批皆確認後才可匯出">📄 匯出結果 PDF</button>
+    <button class="btn-ghost" id="resetBtn">🔁 重新開始</button>
+  </div>
+
+  <section class="rules">
+    <h3>📌 抽籤規則</h3>
+    <ol>
+      <li>全班 20 位學員依座號分為兩批：第1批座號 1～10，第2批座號 11～20。</li>
+      <li>每批由系統以亂數產生 10 位報告順序，抽完先顯示結果。</li>
+      <li>結果由長官確認；如需調整可按「重抽」，該批重新亂數產生。</li>
+      <li>第1批確認後才開放第2批抽籤；第2批確認後產生「最終報告順序」。</li>
+      <li>最終順序：第1批 10 位為第 1～10 順位，第2批 10 位為第 11～20 順位。</li>
+      <li>兩批皆確認後，可按「匯出結果 PDF」留存；「重新開始」將清除全部結果。</li>
+    </ol>
+  </section>
+  <footer>人工智慧應用實務研習班第1期・報告順序抽籤</footer>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3>🔁 確定要重新開始？</h3>
+    <p>兩批抽籤結果都會清除，且無法復原。</p>
+    <div class="actions">
+      <button class="btn-ghost" id="mCancel">取消</button>
+      <button class="btn-main" id="mOk">確定重來</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TITLE = "人工智慧應用實務研習班第1期";
+const batches = [
+  {seats:[1,2,3,4,5,6,7,8,9,10], result:null, confirmed:false, color:"#ff6b4a"},
+  {seats:[11,12,13,14,15,16,17,18,19,20], result:null, confirmed:false, color:"#6c5ce7"}
+];
+let busy = false;
+const $ = id => document.getElementById(id);
+
+/* ---------- 亂數 ---------- */
+function rand(n){ const a=new Uint32Array(1); crypto.getRandomValues(a); return a[0]%n; }
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=rand(i+1);[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+/* ---------- 音訊 ---------- */
+let ctx=null, musicOn=false, sfxOn=true, musicTimer=null, nextNote=0, step=0;
+function ac(){ if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)(); if(ctx.state==="suspended") ctx.resume(); return ctx; }
+function tone(freq,start,dur,type="sine",vol=.15){
+  const c=ac(), o=c.createOscillator(), g=c.createGain();
+  o.type=type; o.frequency.value=freq;
+  g.gain.setValueAtTime(0,start); g.gain.linearRampToValueAtTime(vol,start+.01);
+  g.gain.exponentialRampToValueAtTime(.0001,start+dur);
+  o.connect(g).connect(c.destination); o.start(start); o.stop(start+dur+.05);
+}
+function sfxTick(){ if(!sfxOn) return; const c=ac(); tone(900+rand(300),c.currentTime,.05,"square",.04); }
+function sfxDing(i){ if(!sfxOn) return; const c=ac(); tone(660+i*40,c.currentTime,.25,"triangle",.18); tone(1320+i*80,c.currentTime+.04,.2,"sine",.06); }
+function sfxFanfare(){ if(!sfxOn) return; const c=ac(), t=c.currentTime;
+  [523,659,784,1047].forEach((f,i)=>tone(f,t+i*.12,.35,"triangle",.2)); tone(1047,t+.5,.8,"triangle",.2); tone(784,t+.5,.8,"sine",.1); }
+/* 輕快背景音樂（五聲音階循環） */
+const melody=[523,587,659,784,659,587,523,440, 523,659,784,880,784,659,587,523];
+const bass=[131,131,175,175,196,196,131,131];
+function scheduler(){
+  const c=ac();
+  while(nextNote < c.currentTime + .2){
+    tone(melody[step%melody.length], nextNote, .22, "triangle", .05);
+    if(step%2===0) tone(bass[(step/2)%bass.length], nextNote, .4, "sine", .07);
+    nextNote += .25; step++;
+  }
+}
+function toggleMusic(){
+  musicOn=!musicOn;
+  if(musicOn){ const c=ac(); nextNote=c.currentTime+.05; musicTimer=setInterval(scheduler,60); }
+  else clearInterval(musicTimer);
+  $("musicBtn").textContent = "🎵 背景音樂：" + (musicOn?"開":"關");
+}
+$("musicBtn").onclick=toggleMusic;
+$("sfxBtn").onclick=()=>{ sfxOn=!sfxOn; $("sfxBtn").textContent="🔔 音效："+(sfxOn?"開":"關"); };
+
+/* ---------- 畫面 ---------- */
+function emptyGrid(b){
+  $("grid"+b).innerHTML = Array.from({length:10},(_,i)=>`<div class="chip"><div class="o">第 ${b*10+i+1} 位</div><div class="s">?</div></div>`).join("");
+}
+function render(){
+  batches.forEach((bt,b)=>{
+    const card=$("card"+b), unlocked = b===0 || batches[0].confirmed;
+    card.classList.toggle("locked",!unlocked);
+    card.classList.toggle("done",bt.confirmed);
+    card.classList.toggle("active",unlocked && !bt.confirmed);
+    $("draw"+b).style.display = bt.result ? "none" : "";
+    $("draw"+b).disabled = !unlocked || busy;
+    $("redo"+b).style.display = bt.result && !bt.confirmed ? "" : "none";
+    $("ok"+b).style.display = bt.result && !bt.confirmed ? "" : "none";
+    $("redo"+b).disabled = $("ok"+b).disabled = busy;
+    $("status"+b).textContent = bt.confirmed ? "✅ 已確認定案" : bt.result ? "抽籤結果如下，請長官確認或重抽" : unlocked ? "等待抽籤" : "第1批確認後開放";
+    $("hint"+b).textContent = bt.confirmed ? "本批結果已鎖定" : "";
+    if(!bt.result && !busy){ const r=$("roller"+b); r.className="roller idle"; r.textContent = unlocked ? "按下「開始抽籤」" : "🔒 尚未開放"; }
+  });
+  const allDone = batches.every(b=>b.confirmed);
+  $("pdfBtn").disabled = !allDone;
+  $("final").style.display = allDone ? "block" : "none";
+  if(allDone) renderFinal();
+}
+function finalRows(){
+  const rows=[]; batches.forEach((bt,b)=>bt.result.forEach(s=>rows.push({order:rows.length+1, seat:s, batch:b+1})));
+  return rows;
+}
+function nowStr(){ const d=new Date(); const p=n=>String(n).padStart(2,"0");
+  return `${d.getFullYear()-1911}年${d.getMonth()+1}月${d.getDate()}日 ${p(d.getHours())}:${p(d.getMinutes())}`; }
+let finalTime="";
+function renderFinal(){
+  $("finalMeta").textContent = `${TITLE}・共 20 位・確認時間：${finalTime}`;
+  $("finalBody").innerHTML = finalRows().map(r=>`<tr><td><b>${r.order}</b></td><td><b>${r.seat}</b> 號</td>
+    <td><span class="pill" style="background:${batches[r.batch-1].color}">第${r.batch}批</span></td></tr>`).join("");
+}
+
+/* ---------- 抽籤 ---------- */
+const wait = ms => new Promise(r=>setTimeout(r,ms));
+async function draw(b){
+  if(busy) return; busy=true; ac();
+  const bt=batches[b]; bt.result=null; emptyGrid(b); render();
+  const roller=$("roller"+b); roller.className="roller";
+  $("status"+b).textContent="🎰 抽籤中…";
+  const t0=Date.now();
+  while(Date.now()-t0<1600){ roller.textContent = bt.seats[rand(10)] + " 號"; sfxTick(); await wait(70); }
+  const res = shuffle(bt.seats);
+  const chips=$("grid"+b).children;
+  for(let i=0;i<10;i++){
+    roller.textContent = `第 ${b*10+i+1} 位 → ${res[i]} 號`;
+    chips[i].querySelector(".s").textContent=res[i]; chips[i].classList.add("show");
+    sfxDing(i); await wait(320);
+  }
+  roller.textContent="🎊 抽籤完成！";
+  bt.result=res; busy=false; render();
+}
+function confirmBatch(b){
+  batches[b].confirmed=true; sfxFanfare(); confetti(b===1?120:50);
+  if(b===1) finalTime=nowStr();
+  render();
+  if(b===0){ $("roller1").textContent="按下「開始抽籤」"; $("card1").scrollIntoView({behavior:"smooth",block:"center"}); }
+  else setTimeout(()=>$("final").scrollIntoView({behavior:"smooth"}),300);
+}
+[0,1].forEach(b=>{
+  $("draw"+b).onclick=()=>draw(b);
+  $("redo"+b).onclick=()=>draw(b);
+  $("ok"+b).onclick=()=>confirmBatch(b);
+});
+
+function confetti(n){
+  const colors=["#ff6b4a","#ff9f43","#6c5ce7","#16a085","#f9ca24","#e84393"];
+  for(let i=0;i<n;i++){
+    const d=document.createElement("div"); d.className="confetti";
+    d.style.left=Math.random()*100+"vw"; d.style.background=colors[i%colors.length];
+    d.style.animationDuration=(2+Math.random()*2)+"s"; d.style.animationDelay=Math.random()*.6+"s";
+    document.body.appendChild(d); setTimeout(()=>d.remove(),5000);
+  }
+}
+
+/* ---------- 重新開始 ---------- */
+$("resetBtn").onclick=()=>{ if(!busy) $("modal").style.display="flex"; };
+$("mCancel").onclick=()=>$("modal").style.display="none";
+$("mOk").onclick=()=>{
+  batches.forEach(b=>{b.result=null;b.confirmed=false;}); finalTime="";
+  emptyGrid(0); emptyGrid(1); $("modal").style.display="none"; render();
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+
+/* ---------- 匯出 PDF ---------- */
+function buildSheet(){
+  const el=document.createElement("div");
+  el.style.cssText="width:720px;padding:36px 40px;font-family:'Noto Sans TC',sans-serif;color:#222;background:#fff";
+  const rows=finalRows().map(r=>`<tr><td style="${td}">${r.order}</td><td style="${td}">${r.seat}</td><td style="${td}">第${r.batch}批</td></tr>`).join("");
+  el.innerHTML=`<div style="text-align:center">
+    <div style="font-size:24px;font-weight:900">${TITLE}</div>
+    <div style="font-size:19px;font-weight:700;margin-top:6px">報告順序抽籤結果</div>
+    <div style="font-size:13px;color:#555;margin:8px 0 16px">確認時間：${finalTime}　｜　共 20 位（第1批座號1～10、第2批座號11～20）</div></div>
+    <table style="width:100%;border-collapse:collapse;font-size:15px">
+    <thead><tr><th style="${th}">報告順序</th><th style="${th}">座號</th><th style="${th}">批次</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <div style="margin-top:36px;display:flex;justify-content:space-between;font-size:14px">
+      <span>承辦人：＿＿＿＿＿＿</span><span>長官確認：＿＿＿＿＿＿</span></div>`;
+  return el;
+}
+const td="border:1px solid #999;padding:5px;text-align:center";
+const th="border:1px solid #999;padding:6px;text-align:center;background:#f2f2f2;font-weight:700";
+$("pdfBtn").onclick=async()=>{
+  if($("pdfBtn").disabled) return;
+  const el=buildSheet();
+  try{
+    if(typeof html2pdf==="undefined") throw new Error("no lib");
+    await html2pdf().set({margin:8,filename:`${TITLE}_報告順序抽籤結果.pdf`,
+      image:{type:"jpeg",quality:.98},html2canvas:{scale:2},jsPDF:{unit:"mm",format:"a4",orientation:"portrait"}}).from(el).save();
+  }catch(e){
+    const w=window.open("","_blank");
+    w.document.write(`<html><head><title>${TITLE}_報告順序抽籤結果</title></head><body>${el.outerHTML}</body></html>`);
+    w.document.close(); w.focus(); w.print();
+  }
+};
+
+emptyGrid(0); emptyGrid(1); render();
+</script>
+</body>
+</html>

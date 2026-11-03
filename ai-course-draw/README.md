@@ -21,3 +21,10 @@
 ## 注意事項
 - 匯出 PDF 需要網路連線（載入 PDF 元件）；若瀏覽器擋下下載，會改開列印視窗，請選「另存為 PDF」。
 - 重新整理網頁會清除抽籤結果，請於確認後先匯出 PDF 留存。
+
+---
+# 課程回饋頁
+網址：https://chaifeng666.github.io/web1/ai-course-feedback/
+- 顯示「人工智慧應用實務研習班第1期之課程回饋」標題、QR Code 及短網址 https://reurl.cc/mz1OqW。
+- 可投影讓學員用手機掃描；按「📋 複製網址」可複製短網址貼到群組。
+- QR Code 已內嵌在 html 中，單獨把 index.html 存到隨身碟離線開啟也能顯示。

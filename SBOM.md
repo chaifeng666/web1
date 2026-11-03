@@ -1,7 +1,8 @@
 # SBOM 軟體物料清單｜人工智慧應用實務研習班第1期 網頁
 
 - 產出日期：2026-11-03（115年11月3日）
-- 範圍：`ai-course-draw/index.html`（報告順序抽籤）、`ai-course-feedback/index.html`（課程回饋）
+- 範圍：`index.html`（主網頁）、`ai-course-draw/index.html`（報告順序抽籤）、`ai-course-feedback/index.html`（課程回饋）
+- 主網頁只用原生 HTML／CSS／JavaScript 寫成（含 Canvas 動畫），沒有使用任何第三方元件或外部資源。
 - 機器可讀版本：`sbom.cdx.json`（CycloneDX 1.5）
 
 ## 一、第三方程式元件

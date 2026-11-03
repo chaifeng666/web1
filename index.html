@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>人工智慧應用實務研習班第1期</title>
+<style>
+:root{
+  --bg:#050a18; --bg2:#0a1430; --ink:#e6f1ff; --muted:#8aa0c8;
+  --cyan:#22d3ee; --violet:#a78bfa; --pink:#f472b6; --line:rgba(34,211,238,.25);
+}
+*{box-sizing:border-box}
+html{background:#050a18}
+html,body{margin:0;min-height:100%}
+body{font-family:"Microsoft JhengHei","微軟正黑體","PingFang TC","Heiti TC",sans-serif;color:var(--ink);
+  background:radial-gradient(ellipse at 50% -10%,#16245a 0,var(--bg2) 35%,var(--bg) 75%) fixed;overflow-x:hidden}
+#net{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.grid{position:fixed;left:0;right:0;bottom:0;height:45vh;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:48px 48px;transform:perspective(500px) rotateX(60deg);transform-origin:bottom;
+  mask-image:linear-gradient(to top,#000 0,transparent 90%);-webkit-mask-image:linear-gradient(to top,#000 0,transparent 90%);
+  animation:move 6s linear infinite}
+@keyframes move{to{background-position:0 48px,0 0}}
+.wrap{position:relative;z-index:1;max-width:1040px;margin:0 auto;padding:56px 16px 40px;min-height:100%;display:flex;flex-direction:column}
+.chip{align-self:center;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:rgba(34,211,238,.08);
+  color:var(--cyan);padding:6px 16px;border-radius:999px;font-size:14px;letter-spacing:2px;font-family:Consolas,"Courier New",monospace}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.25}}
+h1{text-align:center;margin:20px 0 8px;font-size:clamp(30px,6.4vw,58px);font-weight:900;line-height:1.25;letter-spacing:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink),var(--cyan));background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 8s linear infinite;
+  filter:drop-shadow(0 0 18px rgba(34,211,238,.35))}
+@keyframes flow{to{background-position:300% 0}}
+.typing{text-align:center;color:var(--muted);font-family:Consolas,"Courier New",monospace;font-size:clamp(14px,2.6vw,18px);min-height:1.6em;margin:0}
+.typing::after{content:"▌";color:var(--cyan);animation:blink 1s infinite;margin-left:2px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:46px 0 30px}
+@media(max-width:720px){.cards{grid-template-columns:1fr}.wrap{padding-top:36px}}
+.card{position:relative;display:block;text-decoration:none;color:var(--ink);padding:30px 28px 26px;border-radius:22px;
+  background:linear-gradient(160deg,rgba(20,34,74,.85),rgba(8,14,34,.9));border:1px solid rgba(138,160,200,.22);
+  backdrop-filter:blur(6px);overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s}
+.card::before{content:"";position:absolute;inset:-1px;border-radius:22px;padding:1px;
+  background:linear-gradient(135deg,var(--c1),transparent 40%,transparent 60%,var(--c2));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.7}
+.card::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.08),transparent);transform:skewX(-20deg);transition:left .6s}
+.card:hover{transform:translateY(-6px);box-shadow:0 18px 50px -10px var(--glow)}
+.card:hover::after{left:130%}
+.card:focus-visible{outline:2px solid var(--c1);outline-offset:4px}
+.c-draw{--c1:#22d3ee;--c2:#a78bfa;--glow:rgba(34,211,238,.45)}
+.c-fb{--c1:#f472b6;--c2:#a78bfa;--glow:rgba(244,114,182,.45)}
+.no{font-family:Consolas,"Courier New",monospace;font-size:13px;letter-spacing:3px;color:var(--c1)}
+.ico{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:14px 0 16px;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.18),transparent 60%),linear-gradient(135deg,var(--c1),var(--c2));
+  box-shadow:0 0 24px -4px var(--c1)}
+.card h2{margin:0 0 8px;font-size:26px;font-weight:900}
+.card p{margin:0 0 18px;color:var(--muted);line-height:1.7;font-size:15.5px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.tags span{font-size:12.5px;padding:3px 10px;border-radius:999px;border:1px solid rgba(138,160,200,.3);color:#c7d6f2}
+.go{display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--c1);font-size:16px}
+.go b{transition:transform .25s}
+.card:hover .go b{transform:translateX(6px)}
+.stats{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+.stat{min-width:150px;text-align:center;padding:12px 18px;border-radius:14px;border:1px solid var(--line);background:rgba(34,211,238,.05)}
+.stat .v{font-size:24px;font-weight:900;color:var(--cyan);font-family:Consolas,"Courier New",monospace}
+.stat .k{font-size:13px;color:var(--muted)}
+footer{margin-top:auto;text-align:center;color:var(--muted);font-size:13px;padding-top:20px;font-family:Consolas,"Courier New",monospace;letter-spacing:1px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="net" aria-hidden="true"></canvas>
+<div class="grid" aria-hidden="true"></div>
+
+<div class="wrap">
+  <span class="chip"><span class="dot"></span>AI PRACTICE · CLASS 01</span>
+  <h1>人工智慧應用實務研習班<br>第1期</h1>
+  <p class="typing" id="typing"></p>
+
+  <div class="cards">
+    <a class="card c-draw" href="ai-course-draw/">
+      <span class="no">MODULE · 01</span>
+      <div class="ico">🎲</div>
+      <h2>報告順序抽籤</h2>
+      <p>20 位學員分兩批亂數抽籤：第1批由 20 位中抽出 10 位，第2批排定其餘 10 位。每批經長官確認後定案，可匯出 PDF。</p>
+      <div class="tags"><span>亂數抽籤</span><span>長官確認／重抽</span><span>匯出 PDF</span></div>
+      <span class="go">進入抽籤 <b>→</b></span>
+    </a>
+    <a class="card c-fb" href="ai-course-feedback/">
+      <span class="no">MODULE · 02</span>
+      <div class="ico">💬</div>
+      <h2>課程回饋</h2>
+      <p>課程結束後，請用手機掃描 QR Code 或點選短網址填寫回饋表單，協助我們持續精進課程內容。</p>
+      <div class="tags"><span>QR Code</span><span>短網址</span><span>1 分鐘填寫</span></div>
+      <span class="go">前往回饋 <b>→</b></span>
+    </a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="v">20</div><div class="k">位學員</div></div>
+    <div class="stat"><div class="v">2</div><div class="k">批次抽籤</div></div>
+    <div class="stat"><div class="v" id="clock">--:--</div><div class="k">現在時間</div></div>
+  </div>
+
+  <footer>© 人工智慧應用實務研習班第1期 · POWERED BY AI</footer>
+</div>
+
+<script>
+/* 打字效果 */
+(function(){
+  const lines=["> 學習 AI，從實務應用開始","> 讓 AI 成為公務工作的好幫手","> 請選擇下方功能模組"];
+  const el=document.getElementById("typing"); let li=0,ci=0,del=false;
+  function tick(){
+    const s=lines[li];
+    el.textContent=s.slice(0,ci);
+    if(!del&&ci<s.length){ci++;setTimeout(tick,90);}
+    else if(!del){del=true;setTimeout(tick,1600);}
+    else if(ci>0){ci--;setTimeout(tick,35);}
+    else{del=false;li=(li+1)%lines.length;setTimeout(tick,300);}
+  }
+  tick();
+})();
+
+/* 時鐘 */
+(function(){
+  const c=document.getElementById("clock");
+  const f=()=>{const d=new Date();c.textContent=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");};
+  f(); setInterval(f,10000);
+})();
+
+/* 神經網路粒子背景 */
+(function(){
+  const cv=document.getElementById("net"), ctx=cv.getContext("2d");
+  const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W,H,pts=[],mouse={x:-999,y:-999};
+  function resize(){
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cv.clientWidth; H=cv.clientHeight; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n=Math.round(Math.min(90,W*H/16000));
+    pts=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.6+.6}));
+  }
+  function frame(){
+    ctx.clearRect(0,0,W,H);
+    for(const p of pts){
+      if(!reduce){p.x+=p.vx;p.y+=p.vy;}
+      if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+    }
+    for(let i=0;i<pts.length;i++){
+      const a=pts[i];
+      for(let j=i+1;j<pts.length;j++){
+        const b=pts[j],dx=a.x-b.x,dy=a.y-b.y,d=dx*dx+dy*dy;
+        if(d<16000){ctx.strokeStyle=`rgba(34,211,238,${.22*(1-d/16000)})`;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+      }
+      const mx=a.x-mouse.x,my=a.y-mouse.y,md=mx*mx+my*my;
+      if(md<26000){ctx.strokeStyle=`rgba(167,139,250,${.5*(1-md/26000)})`;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke();}
+      ctx.fillStyle="rgba(186,230,253,.85)";ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,Math.PI*2);ctx.fill();
+    }
+    if(!reduce) requestAnimationFrame(frame);
+  }
+  window.addEventListener("resize",()=>{resize();if(reduce)frame();});
+  window.addEventListener("pointermove",e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+  window.addEventListener("pointerleave",()=>{mouse.x=mouse.y=-999;});
+  resize(); frame();
+})();
+</script>
+</body>
+</html>

@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>人工智慧應用實務研習班第1期｜報告順序歡樂抽籤</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -14,7 +13,7 @@
   --b1:#ff6b4a; --b2:#6c5ce7; --shadow:0 8px 24px rgba(120,70,20,.12);
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:"Noto Sans TC",system-ui,sans-serif;color:var(--ink);
+body{margin:0;font-family:"Microsoft JhengHei","微軟正黑體","PingFang TC","Heiti TC",sans-serif;color:var(--ink);
   background:radial-gradient(circle at 10% 0%,#fff 0,var(--bg) 40%,var(--bg2) 100%) fixed;min-height:100vh}
 .wrap{max-width:980px;margin:0 auto;padding:20px 16px 40px}
 header{text-align:center;padding:18px 0 8px;position:relative}
@@ -300,7 +299,7 @@ const th="border:1px solid #999;padding:7px;text-align:center;background:#f2f2f2
 function buildSheet(){
   const el=document.createElement("div");
   // 放在畫面左上角（被遮罩蓋住），確保 html2canvas 能正確擷取，不會產生空白檔
-  el.style.cssText="position:absolute;left:0;top:0;z-index:-1;width:760px;padding:36px 44px;font-family:'Noto Sans TC',sans-serif;color:#222;background:#fff";
+  el.style.cssText="position:absolute;left:0;top:0;z-index:-1;width:760px;padding:36px 44px;font-family:'Microsoft JhengHei','微軟正黑體','PingFang TC',sans-serif;color:#222;background:#fff";
   const rows=finalRows().map(r=>`<tr><td style="${td}">${r.order}</td><td style="${td}">${r.seat}</td><td style="${td}">第${r.batch}批</td></tr>`).join("");
   el.innerHTML=`<div style="text-align:center">
     <div style="font-size:26px;font-weight:900">${TITLE}</div>

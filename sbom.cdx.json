@@ -1,0 +1,31 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-11-03T03:00:00Z",
+    "component": {"type": "application", "name": "人工智慧應用實務研習班第1期 網頁（抽籤、課程回饋）", "version": "2026-11-03"}
+  },
+  "components": [
+    {"type": "library", "bom-ref": "pkg:npm/jspdf@2.5.1", "name": "jspdf", "version": "2.5.1", "purl": "pkg:npm/jspdf@2.5.1",
+     "licenses": [{"license": {"id": "MIT"}}], "supplier": {"name": "yWorks GmbH / James Hall"},
+     "hashes": [{"alg": "SHA-256", "content": "98ccf17aa10c20bb1301762618fcc9b6ab3a4e7f26b6071d64d0b41154df3875"}],
+     "externalReferences": [{"type": "distribution", "url": "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"}],
+     "components": [{"type": "library", "name": "fflate", "version": "0.4.9", "purl": "pkg:npm/fflate@0.4.9", "licenses": [{"license": {"id": "MIT"}}], "author": "Arjun Barrett"}]},
+    {"type": "library", "bom-ref": "pkg:npm/html2canvas@1.4.1", "name": "html2canvas", "version": "1.4.1", "purl": "pkg:npm/html2canvas@1.4.1",
+     "licenses": [{"license": {"id": "MIT"}}], "author": "Niklas von Hertzen",
+     "hashes": [{"alg": "SHA-256", "content": "e87e550794322e574a1fda0c1549a3c70dae5a93d9113417a429016838eab8cb"}],
+     "externalReferences": [{"type": "distribution", "url": "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"}],
+     "components": [
+       {"type": "library", "name": "css-line-break", "version": "2.1.0", "purl": "pkg:npm/css-line-break@2.1.0", "licenses": [{"license": {"id": "MIT"}}]},
+       {"type": "library", "name": "text-segmentation", "version": "1.0.3", "purl": "pkg:npm/text-segmentation@1.0.3", "licenses": [{"license": {"id": "MIT"}}]},
+       {"type": "library", "name": "utrie", "version": "1.0.2", "purl": "pkg:npm/utrie@1.0.2", "licenses": [{"license": {"id": "MIT"}}]},
+       {"type": "library", "name": "base64-arraybuffer", "version": "1.0.2", "purl": "pkg:npm/base64-arraybuffer@1.0.2", "licenses": [{"license": {"id": "MIT"}}]}
+     ]}
+  ],
+  "services": [
+    {"name": "GitHub Pages", "provider": {"name": "GitHub, Inc."}, "endpoints": ["https://chaifeng666.github.io/web1/"]},
+    {"name": "cdnjs", "provider": {"name": "Cloudflare, Inc."}, "endpoints": ["https://cdnjs.cloudflare.com/"]},
+    {"name": "reurl.cc 短網址（僅超連結）", "endpoints": ["https://reurl.cc/mz1OqW"]}
+  ]
+}
